@@ -1,0 +1,175 @@
+
+h4 {
+  margin: 20px 0;
+}
+
+#quizHolder {
+    border-radius:5px;
+    margin: 10px;
+    max-width: 600px;
+    padding: 20px;
+    position: relative;
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    background: #353535;
+    color: gainsboro;
+}
+
+#finish {
+  margin: auto;
+  z-index: 100;
+  font-size: 1.3em;
+  float: right;
+  clear: both;
+}
+
+#question-holder {
+  min-height: 315px;
+  position: relative;
+  overflow: hidden;
+}
+
+.answer-holder {
+  position: absolute;
+  width: 95%;
+  left: 2%;
+  display: inline-block;
+}
+
+.quiz-answer {
+  padding: 5px;
+  margin: 5px;
+  cursor: pointer;
+  display: inline-block;
+  max-width: 90%;
+  vertical-align: top;
+  font-weight: 600;
+  color: #868686;
+}
+
+.user-choice {
+    box-shadow: 1px 1px 3px 2px rgba(0, 0, 0, 0.27);
+    cursor: pointer;
+    padding-left: 10px;
+    background: #3c3c3c;
+    border: 2px solid #4a4a4a;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+    width: 90%;
+    margin-bottom: 10px;
+}
+.user-choice.selectedans{
+    background: rgba(84, 159, 189, 0.54);
+    border: 2px solid rgba(84, 159, 189, 0.82);
+}
+.user-choice:hover {
+    background: rgba(84, 159, 189, 0.33);
+    border: 2px solid rgba(84, 159, 189, 0.44);
+}
+
+.btn {
+  margin: 5px;
+  background: #549fbd;
+  color: white;
+}
+
+.btn:focus {
+  color: white;
+}
+
+.btn:active {
+  color: white;
+}
+
+#next {
+  float: right;
+}
+
+.selected {
+  color: #c7c7c7;
+  position: relative;
+}
+
+.checkbox {
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+  margin-top: 10px;
+  background: #ffffff;
+  margin-bottom: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  border: 1px solid #cecece;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.checkbox.selected {
+  background: #549fbd;
+  box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+
+.fade-enter {
+  right: 100px;
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.fade-enter-active {
+  right: 0px;
+  opacity: 1;
+  transition: 0.3s ease-in all;
+  width: 95%;
+  overflow: hidden;
+}
+
+.fade-leave {
+  opacity: 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+.fade-leave-active {
+  opacity: 0;
+  width: 0%;
+  transition: 0.1s width;
+  overflow: hidden;
+}
+table td{
+    border-bottom: 1px solid rgba(220, 220, 220, 0.12);
+}
+.score-p {
+  border-radius:3px;
+  display: inline-block;
+  font-size: 2.5em;
+  color: white;
+  width: 100%;
+  background: #549fbd;
+  margin: 10px 0 10px;
+  padding: 15px 0;
+  text-align: center;
+}
+.result-question-num p{
+      font-size: 3em;
+    padding: 5px 20px;
+    background: #549fbd;
+}
+.feedback{
+  padding:10px 10px;
+  color: #bbbbbb;
+}
+.feedback h4{
+  margin:0;
+}
+.feedback p {
+  margin:0;
+}
+.pass {
+  color: #599859;
+}
+
+.fail {
+  color: #c54f4f;
+}

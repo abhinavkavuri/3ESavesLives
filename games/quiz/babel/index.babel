@@ -1,0 +1,372 @@
+const answerObj = [{
+    question: 'The closest star to Earth is how far away:',
+    answers: [
+      '1 light year',
+      '1 AU',
+      'About 4 light years',
+      'About 4 AU'
+    ],
+    correct: [1],
+    messages: {
+      pass: 'Correct. The closest star is the Sun!',
+      fail: 'Sorry, but that is not correct. Don\'t forget about our Sun'
+    }
+  }, {
+    question: 'How many official moons does the Earth have:',
+    answers: [
+      '1',
+      '2',
+      '3',
+      '4'
+    ],
+    correct: [0],
+    messages: {
+      pass: 'Correct. While Earth has other "quasi-satellites" we officially only have the one moon.',
+      fail: 'Sorry. While Earth does have other "quasi-satellites" we officially only have one moon.'
+    }
+  }, {
+    question: 'Which rocky planet in our solar system is hottest:',
+    answers: [
+      'Mercury',
+      'Venus',
+      'Earth',
+      'Mars'
+
+    ],
+    correct: [1],
+    messages: {
+      pass: 'Correct. Venus is the hottest rocky planet due to it\'s thick atmosphere.',
+      fail: 'Sorry. The correct answer is Venus.'
+    }
+  }, {
+    question: 'How many man-made objects have been sent to the surface Mars (successfully and unsuccessfully):',
+    answers: [
+      '2-5',
+      '6-8',
+      '9-13',
+      '14+'
+    ],
+    correct: [3],
+    messages: {
+      pass: 'Correct. 14 missions have tried to place objects on the surface of Mars, some of these missions contained multiple objects',
+      fail: 'Sorry, the correct answer is 14+. 14 missions have tried to place objects on the surface of Mars, some of these missions contained multiple objects'
+    }
+  }
+
+]
+
+var ReactCSS = React.addons.CSSTransitionGroup;
+
+const Controls = ({
+  currentQuestion,
+  userAnswers,
+  parentMoveBack,
+  numQuestions,
+  parentMoveForward,
+  parentFinishTest,
+  finishedAnswering
+}) => {
+
+  return (
+    <div>
+      {currentQuestion > 0 ? <button className="btn" onClick={parentMoveBack} id="prev">Prev</button> : '' }
+      {currentQuestion <  (numQuestions-1) ? <button className="btn" onClick={parentMoveForward} id="next">Next</button> :''}
+         
+      {!finishedAnswering && currentQuestion == (numQuestions-1)  ? <p>Please answer all question to continue</p> : ''}
+
+     </div>
+  )
+
+}
+Controls.propTypes = {
+  currentQuestion: React.PropTypes.number.isRequired,
+  numQuestions: React.PropTypes.number.isRequired,
+  userAnswers: React.PropTypes.array.isRequired,
+  parentMoveBack: React.PropTypes.func.isRequired,
+  parentMoveForward: React.PropTypes.func.isRequired,
+  parentFinishTest: React.PropTypes.func.isRequired,
+  testForUndefined: React.PropTypes.func.isRequired
+}
+
+class ScoreArea extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      score: 0,
+      passFail: []
+    }
+  }
+  componentWillMount = () => {
+    const userAnswers = this.props.userAnswers;
+    const userAnswerLen = userAnswers.length;
+    const theQuestions = this.props.allQuestions;
+    let score = this.state.score;
+    let passFail = [];
+    for (let i = 0; i < userAnswerLen; i++) {
+      let correctAnswers = theQuestions[i].correct;
+      const corrAnsLen = correctAnswers.length;
+      passFail[i] = 'fail';
+      for (let x = 0; x < corrAnsLen; x++) {
+
+        if (theQuestions[i].correct[x] == userAnswers[i]) {
+          score++;
+          passFail[i] = 'pass';
+        }
+      }
+    }
+
+    this.setState({
+      score: score,
+      passFail: passFail
+    });
+  };
+
+  render = () => {
+    let theUserAnswers = this.props.userAnswers;
+    return (
+      <div>
+        <p id="your-score-lab" className="score-p">Your Score Is: {this.state.score} / {this.props.allQuestions.length}</p>
+          <table>
+            <tbody>
+          {this.props.allQuestions.map(function(question,i){
+                return(
+                  <tr>
+                    <td className="result-question-num">
+                      <p>{i+1}</p>
+                    </td>
+                    <td>
+                      <div className="feedback" key={question.answers[this.props.userAnswers[i]]+'top-div'} >
+                      <h4 key={question.answers[theUserAnswers[i]]+'first-p'} >{question.question}</h4>
+                      <p key={question.answers[theUserAnswers[i]]+'last-p'} className={this.state.passFail[i]}>{question.answers[theUserAnswers[i]]}</p>
+                      <p key={'error-'+i}>{question.messages[this.state.passFail[i]]}</p>
+                      </div>
+                    </td>
+                  </tr>
+                )
+            },this)}
+            </tbody>
+        </table>
+        </div>
+    )
+  };
+
+}
+ScoreArea.propTypes = {
+
+  userAnswers: React.PropTypes.array.isRequired,
+  allQuestion: React.PropTypes.object.isRequired
+
+}
+
+const Question = ({
+  parentAnswerClick,
+  questionNum,
+  questionBlockNumber,
+  userAnswers,
+  option
+}) => {
+
+  return (
+    <div className={userAnswers[questionBlockNumber] == questionNum ? "user-choice selectedans" : "user-choice"} 
+      onClick={parentAnswerClick}
+      data-question-num={questionNum} 
+      data-block-num={questionBlockNumber}>
+           
+                <div  className={userAnswers[questionBlockNumber] == questionNum ? "checkbox selected" : "checkbox"}></div>
+            
+           
+                <p className={userAnswers[questionBlockNumber] == questionNum ? "quiz-answer selected" : "quiz-answer"} >
+                    {option}
+                </p>
+          
+       </div>
+  )
+
+}
+Question.propTypes = {
+  parentAnswerClick: React.PropTypes.func.isRequired,
+  questionNum: React.PropTypes.number.isRequired,
+  questionBlockNumber: React.PropTypes.number.isRequired,
+  option: React.PropTypes.number.isRequired,
+  userAnswers: React.PropTypes.array.isRequired
+}
+
+const QuestionBlock = ({
+  setUserAnswers,
+  question,
+  questionBlockNumber,
+  userAnswers,
+  testForUndefined
+}) => {
+
+  const onAnswerClick = (e) => {
+    var blockNum = e.currentTarget.dataset.blockNum;
+    var selection = e.currentTarget.dataset.questionNum
+    setUserAnswers(blockNum, selection);
+    testForUndefined();
+  };
+
+  let thePotentialAnswers = question.answers.map(function(answer, i) {
+    return (
+      <Question questionNum={i} 
+                  questionBlockNumber={questionBlockNumber} 
+                  parentAnswerClick={onAnswerClick} 
+                  userAnswers= {userAnswers}
+                  key={answer} 
+                  option = {answer} />
+    )
+  }, this)
+
+  const transitionOptions = {
+    transitionName: "fade",
+    transitionEnterTimeout: 300,
+    transitionLeaveTimeout: 100
+  }
+
+  return (
+    <div className="assessment-question">
+      <h4>{question.question}</h4>
+        <div className="answer-holder">   
+          <ReactCSS {...transitionOptions}>
+            {thePotentialAnswers}
+          </ReactCSS>
+        </div>     
+    </div>
+  )
+
+}
+
+QuestionBlock.propTypes = {
+  setUserAnswers: React.PropTypes.func.isRequired,
+  question: React.PropTypes.object.isRequired,
+  questionBlockNumber: React.PropTypes.number.isRequired,
+  userAnswers: React.PropTypes.array.isRequired,
+  testForUndefind: React.PropTypes.func.isRequired
+}
+
+const QuestionArea = ({
+  userAnswers,
+  parentSetUserAnswers,
+  currentQuestion,
+  allQuestions,
+  testForUndefined
+}) => {
+  return (
+    <div id="question-holder" >
+         <QuestionBlock  userAnswers={userAnswers} 
+                         setUserAnswers={parentSetUserAnswers}
+                          testForUndefined={testForUndefined}
+                         questionBlockNumber={currentQuestion} 
+                         question={allQuestions[currentQuestion]} 
+                />
+       </div>
+  )
+}
+QuestionArea.propTypes = {
+  userAnswers: React.PropTypes.array.isRequired,
+  currentQuestion: React.PropTypes.number.isRequired,
+  allQuestions: React.PropTypes.object.isRequired,
+  parentSetUserAnswers: React.PropTypes.func.isRequired,
+  testForUndefined: React.PropTypes.func.isRequired
+}
+
+class Test extends React.Component {
+  constructor(props) {
+    super(props);
+
+   this.state = {
+      currentQuestion: 0,
+      userAnswers: [],
+      finishedAnswering: false,
+      quizComplete: 0,
+      numQuestions: answerObj.length
+    }
+  };
+
+  moveForward = () => {
+    let curQuest = this.state.currentQuestion;
+    if (curQuest <= (this.state.numQuestions - 1)) {
+      this.setState({
+        currentQuestion: this.state.currentQuestion + 1
+      })
+    }
+  };
+
+  moveBack = () => {
+    let curQuest = this.state.currentQuestion;
+    if (curQuest > 0) {
+      this.setState({
+        currentQuestion: this.state.currentQuestion - 1
+      })
+    }
+  };
+
+  finishTest = () => {
+    this.setState({
+      quizComplete: 1
+    })
+  };
+
+  setUserAnswers = (a, b) => {
+    let currArray = this.state.userAnswers;
+    currArray[a] = b;
+
+    this.setState({
+      userAnswers: currArray
+    })
+
+  };
+  testForUndefined = () => {
+
+    let filled = true;
+    for (let x = 0; x < answerObj.length; x++) {
+      if (typeof this.state.userAnswers[x] == 'undefined') {
+        filled = false;
+
+      }
+    }
+
+    this.setState({
+      finishedAnswering: filled
+    });
+
+    return filled;
+  };
+
+  render = () => {
+    return (
+      <div id="quizHolder">
+         {!this.state.quizComplete ?
+                  
+           <div >
+                     
+              <QuestionArea parentSetUserAnswers={this.setUserAnswers} 
+                            userAnswers={this.state.userAnswers} 
+                            currentQuestion = {this.state.currentQuestion} 
+                            allQuestions={answerObj} 
+                            testForUndefined = {this.testForUndefined}
+                    />
+                  
+               <Controls parentMoveForward = {this.moveForward}
+                         userAnswers={this.state.userAnswers}
+                         parentMoveBack = {this.moveBack}
+                         parentFinishTest = {this.finishTest}
+                         finishedAnswering = {this.state.finishedAnswering}
+                         currentQuestion = {this.state.currentQuestion}
+                         numQuestions = {this.state.numQuestions}
+                    />
+             {this.state.finishedAnswering && <button className="btn" id="finish"  onClick={this.finishTest}>Finish</button>  }
+                </div> :
+                <ScoreArea userAnswers={this.state.userAnswers} 
+                             allQuestions={answerObj}           
+                />
+                }
+            </div>
+    )
+  };
+}
+
+ReactDOM.render(
+  <Test/>,
+  document.getElementById('test-div')
+);
